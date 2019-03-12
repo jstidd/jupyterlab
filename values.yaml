@@ -1,0 +1,29 @@
+Instance: global
+
+postgresql:
+  ## create a password
+  ##postgresqlPassword: ciWdhRW1el
+
+  ## don't change this value
+  postgresqlDatabase: jupyter
+
+jupyterhub:
+  proxy:
+    ## Set a secret token
+    secretToken: fd44bc76b10626389811ad6e57ea532d3ddd548cef78195f9629b8493f02efc9
+
+  ## Changing default to jupyterlab
+  singleuser:
+    defaultUrl: "/lab"
+  hub:
+    extraConfig:
+      jupyterlab: |
+        c.Spawner.cmd = ['jupyter-labhub']
+    db:
+      type: postgres
+    cookieSecret: c100c44bd836e2110dd352ef582a9a89c637351e45a82158910c7fab5641218e
+  cull:
+    enabled: false
+
+global:
+ postgresPassword: ciWdhRW1el
