@@ -38,27 +38,27 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: hub-config
+            name: {{template "jupyterhub.fullname" .}}-hub-config
         - name: secret
           secret:
-            secretName: hub-secret
+            secretName: {{template "jupyterhub.fullname" .}}-hub-secret
         {{- if .Values.hub.extraVolumes }}
         {{- .Values.hub.extraVolumes | toYaml | trimSuffix "\n" | nindent 8 }}
         {{- end }}
         {{- if eq .Values.hub.db.type "sqlite-pvc" }}
-        - name: hub-db-dir
+        - name: {{template "jupyterhub.fullname" .}}-hub-db-dir
           persistentVolumeClaim:
-            claimName: hub-db-dir
+            claimName: {template "jupyterhub.fullname" .}}-hub-db-dir
         {{- end }}
       {{- if .Values.rbac.enabled }}
-      serviceAccountName: hub
+      AccountName: {{template "jupyterhub.fullname" .}}-hub
       {{- end }}
       securityContext:
         runAsUser: {{ .Values.hub.uid }}
         fsGroup: {{ .Values.hub.fsGid }}
       {{- if .Values.hub.imagePullSecret.enabled }}
       imagePullSecrets:
-        - name: hub-image-credentials
+        - name: {{template "jupyterhub.fullname" .}}-hub-image-credentials
       {{- end }}  
       containers:
         {{- if .Values.hub.extraContainers }}
@@ -103,7 +103,7 @@ spec:
             {{- end }}
             {{- if eq .Values.hub.db.type "sqlite-pvc" }}
             - mountPath: /srv/jupyterhub
-              name: hub-db-dir
+              name: {{template "jupyterhub.fullname" .}}-hub-db-dir
               {{- if .Values.hub.db.pvc.subPath }}
               subPath: {{ .Values.hub.db.pvc.subPath | quote }}
               {{- end }}
@@ -120,7 +120,7 @@ spec:
             - name: JPY_COOKIE_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: hub-secret
+                  name: {{template "jupyterhub.fullname" . }}-hub-secret
                   key: hub.cookie-secret
             {{- end }}
             - name: POD_NAMESPACE
@@ -130,13 +130,13 @@ spec:
             - name: CONFIGPROXY_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: hub-secret
+                  name: {{template "jupyterhub.fullname" . }}-hub-secret
                   key: proxy.token
             {{- if .Values.auth.state.enabled }}
             - name: JUPYTERHUB_CRYPT_KEY
               valueFrom:
                 secretKeyRef:
-                  name: hub-secret
+                  name: {{template "jupyterhub.fullname" . }}-hub-secret
                   key: auth.state.crypto-key
             {{- end }}
             {{- if .Values.hub.db.password }}
@@ -144,13 +144,13 @@ spec:
             - name: MYSQL_PWD
               valueFrom:
                 secretKeyRef:
-                  name: hub-secret
+                  name: {{template "jupyterhub.fullname" . }}-hub-secret
                   key: hub.db.password
             {{- else if eq .Values.hub.db.type "postgres" }}
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: hub-secret
+                  name: {{template "jupyterhub.fullname" . }}-hub-secret
                   key: hub.db.password
             {{- end }}
             {{- end }}
