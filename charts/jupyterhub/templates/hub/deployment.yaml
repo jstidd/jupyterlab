@@ -51,7 +51,7 @@ spec:
             claimName: {template "jupyterhub.fullname" .}}-hub-db-dir
         {{- end }}
       {{- if .Values.rbac.enabled }}
-      AccountName: {{template "jupyterhub.fullname" .}}-hub
+      serviceAccountName: {{template "jupyterhub.fullname" .}}-hub
       {{- end }}
       securityContext:
         runAsUser: {{ .Values.hub.uid }}
